@@ -1,2 +1,7 @@
 # utils_pas
-free pascal utils.
+
+Lazarus (Free Pascal) utils.
+
+## License
+
+MIT.
