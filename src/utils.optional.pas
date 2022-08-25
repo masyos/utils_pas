@@ -65,6 +65,12 @@ type
   TStringOptional = specialize TOptional<string>;
   { optional for utf8string }
   TUtf8StringOptional = specialize TOptional<utf8string>;
+  { optional for ansistring }
+  TAnsiStringOptional = specialize TOptional<ansistring>;
+  { optional for widestring }
+  TWideStringOptional = specialize TOptional<widestring>;
+  { optional for opinter }
+  TPointerOptional = specialize TOptional<pointer>;
 
   { TObjectOptional }
   { optional for TObject (Ownership with management.) }

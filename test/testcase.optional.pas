@@ -31,6 +31,8 @@ type
   private
     FValue: string;
   public
+    IsCreate: boolean; static;
+
     constructor Create;
     destructor Destroy; override;
     property Value: string read FValue write FValue;
@@ -40,12 +42,14 @@ type
 
 constructor TWork.Create;
 begin
+  IsCreate := true;
   FValue := EmptyStr;
 end;
 
 destructor TWork.Destroy;
 begin
   inherited Destroy;
+  IsCreate := false;
 end;
 
 
@@ -97,11 +101,13 @@ const
   sval = 'Hello, world.';
 var
   objopt: specialize TObjectOptional<TWork>;
-  o, o2 : TWork;
-  s : string;
+  o : TWork;
 begin
   objopt := specialize TObjectOptional<TWork>.Create;
   try
+    if TWork.IsCreate then
+      Fail('not create!');
+
     if objopt.HasValue then
       Fail('has not value!');
 
@@ -121,6 +127,9 @@ begin
 
     o := TWork.Create;
     try
+      if not TWork.IsCreate then
+        Fail('create error!');
+
       o.Value := sval;
       objopt.Value := o;
       if not objopt.HasValue then
@@ -132,11 +141,26 @@ begin
       objopt.Reset;
       if objopt.HasValue then
         Fail('has not value!');
+
+      if TWork.IsCreate then
+        Fail('free error!');
+    finally
+    end;
+
+    o := TWork.Create;
+    try
+      if not TWork.IsCreate then
+        Fail('create error!');
+      o.Value := sval;
+      objopt.Value := o;
     finally
     end;
   finally
     objopt.Free;
   end;
+
+  if TWork.IsCreate then
+    Fail('free error!');
 end;
 
 procedure TTestCaseOptional.SetUp;
@@ -150,7 +174,9 @@ begin
 end;
 
 initialization
+  TWork.IsCreate := false;
 
   RegisterTest(TTestCaseOptional);
+
 end.
 
