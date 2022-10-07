@@ -110,6 +110,11 @@ end;
 
 procedure TOptional.SetValue(AValue: T_);
 begin
+  if FHasValue then begin
+    if FValue = AValue then 
+      Exit;
+    Reset;
+  end;
   FValue := AValue;
   FHasValue := true;
 end;
