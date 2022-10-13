@@ -46,6 +46,16 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Utils.Optional"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\src\utils.coding.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Utils.Coding"/>
+      </Unit>
+      <Unit>
+        <Filename Value="testcase.coding.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TestCase.Coding"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -55,7 +65,7 @@
       <Filename Value="utils_test"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
+      <IncludeFiles Value="$(ProjOutDir);..\src"/>
       <OtherUnitFiles Value="..\src"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>

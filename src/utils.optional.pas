@@ -13,7 +13,11 @@ unit Utils.Optional;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils
+{$IFDEF USES_JSONHELPER}
+  , fpjson
+{$ENDIF}
+  ;
 
 type
   EOptionalError = class(Exception);
@@ -47,6 +51,13 @@ type
     }
     function TryGetValue(ADefVal: T_): T_; inline;
 
+    {$IFDEF USES_JSONHELPER}
+    function ToJSON: TJSONData; inline;
+    function ToJSONString: utf8string; inline;
+    function FromJSON(const AJson: TJsonData): boolean; inline;
+    function FromJSONString(const str: utf8string): boolean; inline;
+    {$ENDIF}
+
     { has value ? }
     property HasValue: boolean read FHasValue;
     { value
@@ -57,6 +68,8 @@ type
 
   { optional for integer }
   TIntegerOptional = specialize TOptional<integer>;
+  { optional for integer }
+  TInt64Optional = specialize TOptional<int64>;
   { optional for double }
   TDoubleOptional = specialize TOptional<double>;
   { optional for boolean }
@@ -93,7 +106,8 @@ type
     property Ownership: boolean read FOwnership write FOwnership;
   end;
 
-
+  { optional for TObject }
+  //TObjectOptional = specialize TObjectOptional<TObject>;
 
 implementation
 
@@ -148,6 +162,63 @@ begin
   else
     Result := ADefVal;
 end;
+
+{$IFDEF USES_JSONHELPER}
+
+function TOptional.ToJSON: TJSONData;
+begin
+  Result := nil;
+  if FHasValue then
+    Result := FValue.ToJSON;
+end;
+
+function TOptional.ToJSONString: utf8string;
+var
+  JD: TJSONData;
+begin
+  Result := EmptyStr;
+  JD := ToJSON;
+  try
+    if Assigned(JD) then
+      Result := JD.AsJSON;
+  finally
+    JD.Free;
+  end;
+end;
+
+function TOptional.FromJSON(const AJson: TJsonData): boolean;
+var
+  v: T_;
+begin
+  Result := false;
+  Reset;
+  if not Assigned(AJson) then begin
+    Exit;
+  end;
+
+  if v.FromJSON(AJson) then begin
+    FValue := v;
+    FHasValue := true;
+    Result := true;
+  end;
+end;
+
+function TOptional.FromJSONString(const str: utf8string): boolean;
+var
+  JD: TJSONData;
+begin
+  Result := false;
+  JD := GetJSON(str);
+  try
+    if Assigned(JD) then
+      Result := FromJSON(JD);
+  finally
+    JD.Free;
+  end;
+end;
+
+{$ENDIF}
+
 
 { TObjectOptional }
 

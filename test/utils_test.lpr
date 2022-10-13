@@ -3,8 +3,8 @@ program utils_test;
 {$mode objfpc}{$H+}
 
 uses
-  Interfaces, Forms, Utils.Optional, GuiTestRunner,
-  TestCase.Optional;
+  Interfaces, Forms, Utils.Optional, Utils.Coding, GuiTestRunner,
+  TestCase.Optional, TestCase.Coding;
 
 {$R *.res}
 
