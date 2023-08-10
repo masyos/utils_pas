@@ -70,6 +70,8 @@ type
   TIntegerOptional = specialize TOptional<integer>;
   { optional for integer }
   TInt64Optional = specialize TOptional<int64>;
+  { optional for single }
+  TSingleOptional = specialize TOptional<single>;
   { optional for double }
   TDoubleOptional = specialize TOptional<double>;
   { optional for boolean }
@@ -106,10 +108,26 @@ type
     property Ownership: boolean read FOwnership write FOwnership;
   end;
 
-  { optional for TObject }
-  //TObjectOptional = specialize TObjectOptional<TObject>;
+
+  { Derived from TOptional class? }
+  function IsOptional(T: TClass): boolean;
 
 implementation
+
+function IsOptional(T: TClass): boolean;
+var
+  c: TClass;
+begin
+  Result := false;
+  c := T;
+  while c <> nil do begin
+    if Pos('TOptional<', c.ClassName) = 1 then begin
+      Result := true;
+      Exit;
+    end;
+    c := c.ClassParent;
+  end;
+end;
 
 
 
@@ -125,8 +143,6 @@ end;
 procedure TOptional.SetValue(AValue: T_);
 begin
   if FHasValue then begin
-    if FValue = AValue then 
-      Exit;
     Reset;
   end;
   FValue := AValue;

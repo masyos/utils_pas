@@ -20,11 +20,18 @@ type
     procedure TestOptional;
     procedure TestObjOptional;
     procedure TestObjOptReplace;
+    procedure TestIsOpt;
   end;
 
 implementation
 
 type
+  TRec = record
+    A, B, C, D: Integer;
+  end;
+  TValOpt1 = specialize TOptional<TRec>;
+  TValOpt2 = class(TValOpt1)
+  end;
 
   { TWork }
 
@@ -111,8 +118,7 @@ var
 begin
   intopt := TIntegerOptional.Create;
   try
-    if intopt.HasValue then
-      Fail('has not value!');
+    AssertFalse('has not value!', intopt.HasValue);
 
     try
       i := intopt.Value;
@@ -123,12 +129,10 @@ begin
     end;
 
     i := intopt.TryGetValue(16);
-    if i <> 16 then
-      Fail('value is not default!');
+    AssertEquals('value is not default!', i, 16);
 
     intopt.Value := 10;
-    if not intopt.HasValue then
-      Fail('has value!');
+    AssertTrue('has value!', intopt.HasValue);
 
     i := intopt.Value;
     if i <> 10 then
@@ -139,8 +143,7 @@ begin
       Fail('value is not set! (2)');
 
     intopt.Reset;
-    if intopt.HasValue then
-      Fail('has not value!');
+    AssertFalse('has not value!', intopt.HasValue);
 
   finally
     intopt.Free;
@@ -241,6 +244,31 @@ begin
     objopt.Free;
   end;
 
+end;
+
+
+procedure TTestCaseOptional.TestIsOpt;
+begin
+  AssertTrue(IsOptional(TIntegerOptional.ClassType));
+  AssertTrue(IsOptional(TInt64Optional.ClassType));
+  AssertTrue(IsOptional(TDoubleOptional.ClassType));
+  AssertTrue(IsOptional(TDoubleOptional.ClassType));
+  AssertTrue(IsOptional(TBooleanOptional.ClassType));
+  AssertTrue(IsOptional(TStringOptional.ClassType));
+  AssertTrue(IsOptional(TUtf8StringOptional.ClassType));
+  AssertTrue(IsOptional(TAnsiStringOptional.ClassType));
+  AssertTrue(IsOptional(TWideStringOptional.ClassType));
+  AssertTrue(IsOptional(TPointerOptional.ClassType));
+
+  AssertTrue(IsOptional(specialize TOptional<TRec>.ClassType));
+
+  AssertTrue(IsOptional(specialize TObjectOptional<TObject>.ClassType));
+
+  AssertTrue(IsOptional(TValOpt1.ClassType));
+  AssertTrue(IsOptional(TValOpt2.ClassType));
+
+  AssertFalse(IsOptional(TWork));
+  AssertFalse(IsOptional(TValue));
 end;
 
 procedure TTestCaseOptional.SetUp;
